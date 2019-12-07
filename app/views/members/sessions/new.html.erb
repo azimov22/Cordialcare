@@ -1,0 +1,33 @@
+<% flash.each do |key, label| %>
+  <% if key == "alert" %>
+    <div class="ui negative message" style="margin: 15px;">
+      <div class="header">
+        <%= label %>
+      </div>
+    </div>
+  <% end %>
+<% end %>
+
+<div class="ui center aligned three column grid" style="display: flex; align-items: center; height: 100vh;">
+  <div class="column"></div>
+  <div class="column">
+    <%= image_tag "logo.png", style: "width: 70%; height: 40%" %>
+    <%= form_for(resource, as: resource_name, url: sesion_path(resource_name), html: {class: 'ui large form'}) do |f| %>
+      <div class="ui stacked segment">
+        <div class="field">
+          <%= f.text_field :username, autofocus: true, autocomplete: "member-username", placeholder: "Имя пользователя"  %>
+        </div>
+        <div class="field">
+          <%= f.password_field :password, autofocus: true, autocomplete: "current-password", placeholder: "Пароль"  %>
+        </div>
+
+        <%# if devise_mapping.rememberable? %>
+          <%#= f.hidden_field :remember_me, value: "checked" %>
+        <%# end %>
+
+        <%= f.submit "Log in", class: "ui fluid large submit button", style: "background-color: #81bded; color: white" %>
+      </div>
+    <% end %>
+  </div>
+  <div class="column"></div>
+</div>

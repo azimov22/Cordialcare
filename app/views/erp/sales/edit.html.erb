@@ -1,0 +1,5 @@
+<%= link_to '← Назад', url_for(:back) %>
+
+<h1>Edit  #<%= @sale.id %> </h1>
+
+<%= render partial: 'erp/sales/form', locals: { sale: @sale } %>

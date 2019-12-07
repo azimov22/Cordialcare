@@ -1,0 +1,16 @@
+<h1>
+  Non-members
+</h1>
+<table class="ui celled table">
+  <thead>
+  <tr style="text-align: center">
+    <th>First Name</th>
+    <th>Last Name</th>
+    <th>Phone number</th>
+    <th>Sale Id</th>
+    <th>Seller membership</th>
+    <th>Total</th>
+  </tr>
+  </thead>
+  <%= render partial:'erp/non_members/non_member', collection: @non_members, locals: { list: true } %>
+</table>

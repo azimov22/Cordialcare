@@ -1,0 +1,52 @@
+<% if member.errors.any? %>
+  <div class="ui negative message">
+    <div class="ui header">
+      Error with creation
+    </div>
+    <ul>
+      <% member.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+<%= form_for member, html: { class: "ui form grid" } do |member| %>
+  <div class="row">
+    <div class="twelve wide column field">
+      <h3>New Buyer</h3>
+      <label>First name</label>
+      <%= member.text_field :first_name, required: true %>
+      <label>Last name</label>
+      <%= member.text_field :last_name, required: true %>
+      <label>Birthday</label>
+      <%= member.date_field :birthday, placeholder: "Birthday", :order => [:day, :month, :year], required: true %>
+      <label>Email</label>
+      <%= member.text_field :email, required: true %>
+      <label>Phone number</label>
+      <%= member.text_field :phone_number,  data: { mask: '+7 (000) 000-00-00' }, required: true %>
+      <label>Member Role</label>
+      <%= member.select :member_role_id, MemberRole.all.map{ |role| [role.name, role.id]}, required: true %>
+      <label>Team</label>
+      <%= member.select :team_id, Team.all.map{ |entity| [entity.name, entity.id] }, required: true %>
+      <label>Gender</label>
+      <%= member.select :gender, ["Male", "Female"], required: true %>
+      <label>Marital statys</label>
+      <%= member.select :marital_status, ['Married', 'Widowed', 'Separated', 'Divorced', 'Single'] %>
+      <label>Address</label>
+      <%= member.text_field :address %>
+      <label>Username</label>
+      <%= member.text_field :username, required: true %>
+      <label>Password</label>
+      <%= member.password_field :password, required: true %>
+      <label>Password Confirmation</label>
+      <%= member.password_field :password_confirmation, required: true %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="sixteen wide column">
+      <div class="ui divider"></div>
+      <%= member.submit "Create member", class: "ui blue button" %>
+    </div>
+  </div>
+<% end %>

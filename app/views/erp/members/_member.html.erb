@@ -1,0 +1,50 @@
+<tbody>
+<tr>
+    <% p = [] %>
+    <% Sale.where(seller_id: member.id, sale_date: (Date.today.beginning_of_month..Date.today.end_of_month)).each do |sale| %>
+      <% p << sale.member_profit %>
+    <% end %>
+    <% if p.sum() == 0 %>
+    <td class="warning" style="text-align: center">
+      <i class="attention icon"></i>  #<%= member.membership_id %>
+    </td>
+    <% else %>
+    <td style="text-align: center">
+      #<%= member.membership_id%>
+    </td>
+    <% end %>
+
+  <td>
+    Full Name: <%= member.full_name %>;
+    <div class="ui red mini label"> Team:<%= member.team.name %></div>
+    <% if Member.find_by(team_id: member.team.id, member_role_id: MemberRole.find_by(name: "Beauty Consultant Leader").id).present? %>
+      <div class="ui orange mini label">
+        Leader: <%= Member.find_by(team_id: member.team.id, member_role_id: MemberRole.find_by(name: "Beauty Consultant Leader").id).full_name %>
+      </div>
+    <% end %>
+    <br/>
+    Role: <%= member.role.name %>;
+  </td>
+  <td style="text-align: center">
+    <% p = [] %>
+    <% Sale.where(seller_id: member.id, sale_date: (Date.today.beginning_of_week(start_day = :monday)..Date.today.end_of_week(last_day = :sunday))).each do |sale| %>
+      <% p << sale.member_profit %>
+    <% end %>
+    <%= tenge p.sum() %>
+  </td>
+  <td style="text-align: center">
+    <% p = [] %>
+    <% Sale.where(seller_id: member.id, sale_date: (Date.today.beginning_of_month..Date.today.end_of_month)).each do |sale| %>
+      <% p << sale.member_profit %>
+    <% end %>
+   <%= tenge p.sum() %>
+  </td>
+  <td style="text-align: center">
+    <% p = [] %>
+    <% Sale.where(seller_id: member.id).each do |sale| %>
+      <%  p << sale.member_profit %>
+    <% end %>
+    <%= tenge p.sum() %>
+  </td>
+</tr>
+</tbody>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Cordial Care ERP</title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <link rel="manifest" href="/manifest.json" />
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.7.5/dist/semantic.min.css">
+
+    <%= stylesheet_link_tag 'erp', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_include_tag 'erp', 'data-turbolinks-track': 'reload' %>
+
+  </head>
+
+  <body>
+    <div class="ui fixed vertical inverted menu" style="width: 150px; position: fixed; top: 0;left: 0; bottom: 0;">
+      <%= render 'erp/partials/sidebar_menu' %>
+    </div>
+    <div style="padding:40px 40px 40px 170px; min-height: 100vh; background-color: white;">
+      <% flash.each do |key, text| %>
+        <% if key == "notice" %>
+          <div class="ui positive message">
+            <%= text %>
+          </div>
+        <% end %>
+      <% end %>
+      <%# breadcrumbs.tap do |links| %>
+        <%# if links.any? %>
+    <!--      <div class="ui breadcrumb">-->
+            <%# links.each do |link| %>
+              <%# if link.current? %>
+    <!--            <div class="active section"><%#= link.text %></div>-->
+              <%# else %>
+                <%#= link_to link.text, link.url, class: "section" %>
+    <!--            <i class="divider">/</i>-->
+              <%# end %>
+            <%# end %>
+    <!--      </div>-->
+        <%# end %>
+      <%# end %>
+      <%= yield %>
+    </div>
+  </body>
+</html>

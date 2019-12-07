@@ -1,0 +1,110 @@
+<h1> Profile</h1>
+<div class="ui segments">
+  <div class="ui segment">
+   <h2><%= @profile.full_name %></h2>
+  </div>
+  <div class="ui secondary segment">
+    <table class="ui very basic compact table">
+      <tr>
+        <td style="width: 100px">Membership_id:</td>
+        <td><%= @profile.membership_id%></td>
+      </tr>
+      <tr>
+        <td style="width: 200px">Username:</td>
+        <td><%= @profile.username %></td>
+      </tr>
+      <tr>
+        <td style="width: 100px">Email:</td>
+        <td><%= @profile.email %></td>
+      </tr>
+      <tr>
+        <td style="width: 100px">Role:</td>
+        <td><%= @profile.role.name %></td>
+      </tr>
+      <tr>
+        <td style="width: 100px">MemberShip started at:</td>
+        <td><%= l @profile.created_at, format: :short %></td>
+      </tr>
+      <tr>
+        <td style="width: 100px">Team:</td>
+        <td><%= @profile.team.name %></td>
+      </tr>
+      <tr>
+        <td style="width: 100px">Team manager:</td>
+        <td>
+          <% if Member.find_by(team_id: @profile.team.id, member_role_id: MemberRole.find_by(name: "Team manager").id).present? %>
+          <%= Member.find_by(team_id: @profile.team.id, member_role_id: MemberRole.find_by(name: "Team manager").id).full_name %>
+          <% end %>
+        </td>
+      </tr>
+      <tr>
+        <td style="width: 100px">Team leader:</td>
+        <td>
+          <% if Member.find_by(team_id: @profile.team.id, member_role_id: MemberRole.find_by(name: "Beauty Consultant Leader").id).present? %>
+            <%= Member.find_by(team_id: @profile.team.id, member_role_id: MemberRole.find_by(name: "Beauty Consultant Leader").id).full_name %>
+          <% end %>
+        </td>
+      </tr>
+      <tr>
+        <td style="width: 100px">Team members:</td>
+        <td>
+          <% Member.where(team: @profile.team).each do |member|%>
+           <div class="ui label"><%= member.full_name %></div>
+        <% end %>
+        </td>
+      </tr>
+      <tr>
+        <td>Total sales count:</td>
+        <td>
+          <%= Sale.where(seller_id: @profile.id).count %>
+        </td>
+      </tr>
+      <tr>
+        <td style="width: 100px">Commission total:</td>
+        <td>
+          <% p = [] %>
+          <% Sale.where(seller_id: @profile.id).each do |sale| %>
+            <%  p << sale.member_profit %>
+          <% end %>
+          <div class="ui orange label"><%= tenge p.sum() %></div>
+        </td>
+      </tr>
+      <tr>
+        <td>Monthly sales count:</td>
+        <td>
+          <%= Sale.where(seller_id: @profile.id, sale_date: (Date.today.beginning_of_month..Date.today.end_of_month)).count %>
+        </td>
+      </tr>
+      <tr>
+        <td>Monthly sales commission:</td>
+        <td>
+          <% p = [] %>
+          <% Sale.where(seller_id: @profile.id, sale_date: (Date.today.beginning_of_month..Date.today.end_of_month)).each do |sale| %>
+            <% p << sale.member_profit %>
+          <% end %>
+          <div class="ui red label"><%= tenge p.sum() %></div>
+        </td>
+      </tr>
+      <tr>
+        <td>Weekly sales count:</td>
+        <td>
+          <%= Sale.where(seller_id: @profile.id, sale_date: (Date.today.beginning_of_week(start_day = :monday)..Date.today.end_of_week(last_day = :sunday))).count %>
+        </td>
+      </tr>
+      <tr>
+        <td>Weekly sales count:</td>
+        <td>
+          <% p = [] %>
+          <% Sale.where(seller_id: @profile.id, sale_date: (Date.today.beginning_of_week(start_day = :monday)..Date.today.end_of_week(last_day = :sunday))).each do |sale| %>
+            <% p << sale.member_profit %>
+          <% end %>
+          <div class="ui green label"><%= tenge p.sum() %></div>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div class="ui segment">
+    <%= link_to raw("<i class='user icon'></i>Edit password"), edit_member_registration_path %>
+    <%= link_to raw("<i class='power icon'></i>Exit"), destroy_member_session_path, method: :delete, style: "margin-left: 10px" %>
+  </div>
+</div>

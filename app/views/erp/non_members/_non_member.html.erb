@@ -1,0 +1,22 @@
+<tbody>
+<tr>
+  <td style="text-align: center">
+    <%= non_member.first_name %>
+  </td>
+  <td style="text-align: center">
+    <%= non_member.last_name %>
+  </td>
+  <td style="text-align: center">
+    <%= non_member.phone_number %>
+  </td>
+  <td style="text-align: center">
+    <%= Sale.find_by(buyer_id: non_member.id, buyer_type: "NonMember").id%>
+  </td>
+  <td style="text-align: center">
+    <%= Sale.find_by(buyer_id: non_member.id, buyer_type: "NonMember").seller.membership_id%>
+  </td>
+  <td style="text-align: center">
+    <%= tenge Sale.find_by(buyer_id: non_member.id, buyer_type: "NonMember").sales_products.sum(:amount) %>
+  </td>
+</tr>
+</tbody>

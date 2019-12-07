@@ -1,0 +1,45 @@
+<h1>
+  Sales
+  <% if current_member.is_team_manager? || current_member.is_junior_director? || current_member.is_senior_director? %>
+  <a class="ui right floated blue small button" style=" color: white"
+     href="<%= sales_type_path %>"
+     id="new-question-button">
+    Add sale
+  </a>
+  <% end %>
+</h1>
+<%= form_tag sales_path, method: 'get' do %>
+
+  <%= select_tag :id, options_for_select([["All ids", 'all']] +  Sale.all.map{|p| [p.id]},
+                                         params[:id]),
+                 onchange: "this.form.submit();", class: "select"%>
+  <%= select_tag :seller_id, options_for_select([["All sellers", 'all']] +  Member.all.map{|p| [p.membership_id, p.id]},
+                                         params[:seller_id]),
+                 onchange: "this.form.submit();", class: "select"%>
+  <%= select_tag :team_id, options_for_select([["All teams", 'all']] +  Team.all.map{|p| [p.name, p.id]},
+                                         params[:team_id]),
+                 onchange: "this.form.submit();", class: "select"%>
+  <%= select_tag :sale_type_id, options_for_select([["All types", 'all']] +  SaleType.all.map{|p| [p.name,  p.id]},
+                                              params[:sale_type_id]),
+                 onchange: "this.form.submit();", class: "select"%>
+<% end %>
+
+<table class="ui celled table">
+  <thead>
+  <tr style="text-align: center">
+    <th>Sale id</th>
+    <th>Sale Info</th>
+    <th>Products</th>
+    <th>Total</th>
+    <th>Profit</th>
+    <th>Status</th>
+    <th>Sale date</th>
+    <% if current_member.is_team_manager? || current_member.is_junior_director? || current_member.is_senior_director? %>
+      <th>Actions</th>
+    <% end %>
+  </tr>
+  </thead>
+<%= render partial:'erp/sales/sale', collection: @sales, locals: { list: true } %>
+</table>
+
+

@@ -1,0 +1,132 @@
+<div class="ui grid">
+  <div class="sixteen wide column">
+    <div class="field">
+      <h1>Dashboard</h1>
+      <% if current_member.is_junior_director? || current_member.is_senior_director? %>
+        <table class="ui celled table">
+          <thead>
+          <tr style="text-align: center ">
+            <th>Team</th>
+            <th>Monthly sales transaction number</th>
+            <th>Number of active membership</th>
+            <th>Number of total members</th>
+            <th>Monthly sales amount</th>
+            <th>Year accumulate</th>
+          </tr>
+          </thead>
+          <tbody>
+          <% Team.all.each do |team| %>
+          <tr style="text-align: center">
+              <td><%= team.name %></td>
+              <td>
+                <%=Sale.where(team_id: team.id, sale_date: (Date.today.beginning_of_month..Date.today.end_of_month)).count %>
+              </td>
+              <td>
+                <% p = [] %> <% a = 0 %>
+              <% Member.where(team: team).each do |member| %>
+                <% Sale.where(seller_id: member.id, sale_date: (Date.today.beginning_of_month..Date.today.end_of_month)).each do |sale| %>
+                  <% p << sale.member_profit %>
+                <% end %>
+                  <% if p.sum() > 0 %>
+                    <% a += 1 %>
+                  <% end %>
+              <% end %>
+                <%= a %>
+              </td>
+              <td><%= Member.where(team_id: team.id).size %></td>
+              <td>
+                <% p = [] %>
+                <% Sale.where(team_id: team.id, sale_date: (Date.today.beginning_of_month..Date.today.end_of_month)).each do |sale| %>
+                  <%  sale.sales_products.each do |sale_product| %>
+                    <% p << sale_product.amount %>
+                  <% end %>
+                <% end %>
+                <%= tenge p.sum() %>
+              </td>
+              <td>
+                <% p = [] %>
+                <% Sale.where(team_id: team.id, sale_date: (Date.today.beginning_of_year..Date.today.end_of_year)).each do |sale| %>
+                  <%  sale.sales_products.each do |sale_product| %>
+                    <% p << sale_product.amount %>
+                  <% end %>
+                <% end %>
+                <%= tenge p.sum() %>
+              </td>
+          </tr>
+          <% end %>
+          </tbody>
+        </table>
+      <% elsif current_member.is_team_manager? %>
+        <table class="ui celled table">
+          <thead>
+          <tr style="text-align: center">
+            <th>Beauty consultant</th>
+            <th>Monthly sales transaction number</th>
+            <th>Sales amount</th>
+            <th>Commission</th>
+          </tr>
+          </thead>
+          <tbody>
+          <% Member.where(team_id: current_member.team.id).each do |member| %>
+            <tr style="text-align: center">
+                <td><%= member.full_name %></td>
+                <td>
+                  <%=Sale.where(seller_id: member.id, sale_date: (Date.today.beginning_of_month..Date.today.end_of_month)).count %>
+                </td>
+              <td style="text-align: center">
+                <% p = [] %>
+                <% Sale.where(seller_id: member.id, sale_date: (Date.today.beginning_of_month..Date.today.end_of_month)).each do |sale| %>
+                  <% sale.sales_products.each do |sale_product| %>
+                    <% p << sale_product.amount %>
+                  <% end %>
+                <% end %>
+                <%= tenge p.sum() %>
+              </td>
+              <td style="text-align: center">
+                <% p = [] %>
+                <% Sale.where(seller_id: member.id, sale_date: (Date.today.beginning_of_month..Date.today.end_of_month)).each do |sale| %>
+                  <% p << sale.member_profit %>
+                <% end %>
+                <%= tenge p.sum() %>
+              </td>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        <table class="ui celled table">
+          <thead>
+          <tr style="text-align: center">
+            <th>Sale Date</th>
+            <th>Customer name</th>
+            <th>Sales amount</th>
+            <th>Commission</th>
+          </tr>
+          </thead>
+          <tbody>
+          <% Sale.where(seller_id: current_member.id, sale_date: (Date.today.beginning_of_month..Date.today.end_of_month)).each do |sale| %>
+            <tr style="text-align: center">
+              <td>
+                <%= sale.sale_date %>
+              </td>
+              <td>
+                <%= sale.buyer.full_name %>
+              </td>
+              <td>
+                <% p = [] %>
+                <% sale.sales_products.each do |sale_product| %>
+                <% p << sale_product.amount %>
+                <% end %>
+                <%= tenge p.sum() %>
+              </td>
+              <td>
+                <%= tenge sale.member_profit %>
+              </td>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
+      <% end %>
+    </div>
+  </div>
+</div>

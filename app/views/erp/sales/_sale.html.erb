@@ -1,0 +1,57 @@
+<tbody>
+<tr>
+  <td style="text-align: center">
+    #<%= sale.id %>
+  </td>
+  <td>
+    Type: <%=  sale.type.name %>
+    <div class="ui red mini label"><%= sale.team.name %></div>
+    <br/>
+    Seller: <%= sale.seller.membership_id %> <div class="ui orange mini label">Commission:<%= tenge sale.member_profit %></div>
+    <% if sale.type.name == "New member" %>
+      <br/>Buyer: <%= sale.buyer.membership_id %>
+    <% elsif sale.type.name == "Non-member" %>
+      <br/>Buyer: <%= NonMember.find_by(id: sale.buyer_id).full_name %>
+    <%else %>
+    <% end %>
+  </td>
+  <td>
+    <div class="ui small labels">
+      <% sale.sales_products.each do |product| %>
+        <div class="ui label" style="background: white">
+          <span style="color: black"><%= Product.find_by(id: product.product_id).code %></span>
+          <span style="color: red"><%= Product.find_by(id: product.product_id).basic_commission %>%</span>
+          <br/>
+          Price: <%= tenge product.price %>; Qty: x<%= product.quantity %><br/>
+          Total:
+          <%=tenge product.amount %>
+        </div>
+      <% end %>
+    </div>
+  </td>
+  <td style="text-align: center">
+    <%= tenge sale.sales_products.sum(:amount) %>
+  </td>
+  <td style="text-align: center">
+    <%= tenge sale.sales_products.sum(:amount) - sale.member_profit %>
+  </td>
+  <td style="text-align: center">
+    <div class="ui tiny <%= sale.status.color %> label">
+      <%= sale.status.name %><br/>
+      <% if sale.status == "updated" %>
+        <%= l sale.updated_at.in_time_zone("Asia/Almaty"), format: :short %>
+      <% else %>
+        <%= l sale.created_at.in_time_zone("Asia/Almaty"), format: :short %>
+      <% end %>
+    </div>
+  </td>
+  <td style="text-align: center">
+    <%= l sale.sale_date, format: :long%>
+  </td>
+  <% if current_member.is_team_manager? || current_member.is_junior_director? || current_member.is_senior_director? %>
+    <td style="text-align: center">
+      <%= link_to "Edit", sales_type_edit_path(sale.type, sale) %>
+    </td>
+  <% end %>
+</tr>
+</tbody>

@@ -1,0 +1,10 @@
+/*
+ *= require select2
+ *= require_self
+*/
+@import "semantic-ui";
+@import "semantic-ui/collections/grid";
+
+.select {
+  min-width: 150px;
+}

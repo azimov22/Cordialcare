@@ -1,0 +1,59 @@
+
+
+<!--<div class="ui dropdown right floated", style="position: absolute; right: 44px">-->
+<!--  Настройки <i class="dropdown icon"></i>-->
+<!--  <div class="menu">-->
+<!--    <div class="item">-->
+      <%# unless @sale.status == :accepted %>
+      <%#= link_to raw("<i class='cog icon'></i> Edit sale"), edit_sale_path(@sale)%>
+      <%# end %>
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->
+<h3>
+  Sale #<%=  @sale.id%>
+</h3>
+<div class="ui segments" style="margin-top: 20px">
+  <div class="ui segment" style="background: rgba(0,0,0,0.03);">
+    <table class="ui very basic compact table">
+      <tr>
+        <td>Status:</td>
+        <td><%= @sale.status.name %></td>
+      </tr>
+      <tr>
+        <td>Sale Type:</td>
+        <td><%= @sale.type.name%></td>
+      </tr>
+      <tr>
+        <td>Seller:</td>
+        <td><%= @sale.seller.member_full_name %></td>
+      </tr>
+      <tr>
+        <td>Buyer:</td>
+        <td><%= @sale.buyer.member_full_name %></td>
+      </tr>
+      <tr>
+        <td>Group:</td>
+        <td><%= @sale.group.name%></td>
+      </tr>
+      <tr>
+        <td>Team:</td>
+        <td><%= @sale.team.name%></td>
+      </tr>
+      <% @sale.sales_products.each_with_index do |sale, v| %>
+        <tr>
+          <td>Product #<%=v+1%>:</td>
+          <td><%= sale.product.code %>-<%= sale.product.name_eng %></td>
+        </tr>
+        <tr>
+          <td>Quantity #<%=v+1%>:</td>
+          <td><%= sale.quantity %></td>
+        </tr>
+        <tr>
+          <td>Amount #<%=v+1%>:</td>
+          <td><%= sale.amount %></td>
+        </tr>
+      <% end %>
+    </table>
+  </div>
+</div>

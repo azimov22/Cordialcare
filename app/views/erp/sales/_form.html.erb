@@ -1,0 +1,376 @@
+<%= form_for sale, html: { class: "ui form grid" } do |f| %>
+
+  <%= f.hidden_field :team_id, required: true %>
+  <%= f.hidden_field :sale_type_id, requeired: true %>
+
+
+  <% if sale.errors.any? %>
+    <div class="ui negative message">
+      <div class="ui header">
+        Error with creation
+      </div>
+      <ul>
+        <% sale.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="row">
+    <div class="thirteen wide column field">
+      <h3>Seller</h3>
+      <select class="select_seller" name="seller_id">
+        <option value="">Select seller</option>
+        <% Member.all.each do |member| %>
+          <option value="<%=member.id %>"
+                  data-full_name="<%=member.full_name%>"
+                  data-role="<%= member.role.name %>"
+                  data-team="<%= member.team.name %>"
+                  data-branch="<%= member.team.location.full_location %>">
+            <%=member.membership_id%>
+          </option>
+        <% end %>
+      </select>
+      <div style="display: flex; flex-flow: row;">
+        <input type="text" class="full_name" value="" disabled style="border:none"/>
+        <input type="text" class="role" value="" disabled style="border:none"/>
+        <input type="text" class="team" value="" disabled style="border:none"/>
+        <input type="text" class="branch" value="" disabled style="border:none"/>
+      </div>
+      <script>
+          $('.select_seller').on("change", function () {
+              $(`.select_seller`).find("option:selected").each(function() {
+                  if($(this).data("full_name")){
+                      full_name = $(this).data("full_name");
+                      $(`.full_name`).val(`Full name: ${full_name}`);
+                  }
+                  if($(this).data("role")){
+                      role = $(this).data("role");
+                      $(`.role`).val(`Role: ${role}`);
+                  }
+                  if($(this).data("team")){
+                      team = $(this).data("team");
+                      $(`.team`).val(`Team: ${team}`);
+                  }
+                  if($(this).data("branch")){
+                      branch = $(this).data("branch");
+                      $(`.branch`).val(`Branch : ${branch}`);
+                  }
+              });
+          });
+      </script>
+      <% if params[:sale_type_id].to_i == SaleType.find_by(name: "Self purchasing").id %>
+      <% elsif params[:sale_type_id].to_i == SaleType.find_by(name: "New member").id %>
+        <% if sale.buyer.present? && sale.buyer_type == "Member" %>
+          <%=f.fields_for :member do |member| %>
+            <h3>New Buyer</h3>
+            <label>First name</label>
+            <%= member.text_field :first_name, value: sale.buyer.first_name, required: true %>
+            <label>Last name</label>
+            <%= member.text_field :last_name, value: sale.buyer.last_name, required: true %>
+            <label>Birthday</label>
+            <%= member.date_field :birthday, value: sale.buyer.birthday, placeholder: "Birthday", :order => [:day, :month, :year], required: true %>
+            <label>Email</label>
+            <%= member.text_field :email,value: sale.buyer.email, required: true %>
+            <label>Phone number</label>
+            <%= member.text_field :phone_number, value: sale.buyer.phone_number,  data: { mask: '+7 (000) 000-00-00' }, required: true %>
+            <label>Member Role</label>
+            <%= member.select :member_role_id, MemberRole.all.map{ |role| [role.name, role.id]}, value: sale.buyer.member_role_id, required: true %>
+            <label>Team</label>
+            <%= member.select :team_id, Team.all.map{ |entity| [entity.name, entity.id] }, value: sale.buyer.team,required: true %>
+            <label>Gender</label>
+            <%= member.select :gender, ["Male", "Female"], value: sale.buyer.gender, required: true %>
+            <label>Marital statys</label>
+            <%= member.select :marital_status, ['Married', 'Widowed', 'Separated', 'Divorced', 'Single'], value: sale.buyer.marital_status %>
+            <label>Address</label>
+            <%= member.text_field :address, value: sale.buyer.address %>
+            <label>Username</label>
+            <%= member.text_field :username, value: sale.buyer.username, required: true %>
+            <label>Password</label>
+            <%= member.password_field :password, required: true %>
+            <label>Password Confirmation</label>
+            <%= member.password_field :password_confirmation, required: true %>
+          <% end %>
+        <% else %>
+          <%=f.fields_for :member do |member| %>
+            <h3>New Buyer</h3>
+            <label>First name</label>
+            <%= member.text_field :first_name, required: true %>
+            <label>Last name</label>
+            <%= member.text_field :last_name, required: true %>
+            <label>Birthday</label>
+            <%= member.date_field :birthday, placeholder: "Birthday", :order => [:day, :month, :year], required: true %>
+            <label>Email</label>
+            <%= member.text_field :email, required: true %>
+            <label>Phone number</label>
+            <%= member.text_field :phone_number,  data: { mask: '+7 (000) 000-00-00' }, required: true %>
+            <label>Member Role</label>
+            <%= member.select :member_role_id, MemberRole.all.map{ |role| [role.name, role.id]}, required: true %>
+            <label>Team</label>
+            <%= member.select :team_id, Team.all.map{ |entity| [entity.name, entity.id] }, required: true %>
+            <label>Gender</label>
+            <%= member.select :gender, ["Male", "Female"], required: true %>
+            <label>Marital statys</label>
+            <%= member.select :marital_status, ['Married', 'Widowed', 'Separated', 'Divorced', 'Single'] %>
+            <label>Address</label>
+            <%= member.text_field :address %>
+            <label>Username</label>
+            <%= member.text_field :username, required: true %>
+            <label>Password</label>
+            <%= member.password_field :password, required: true %>
+            <label>Password Confirmation</label>
+            <%= member.password_field :password_confirmation, required: true %>
+          <% end %>
+        <% end %>
+        
+      <% else %>
+        <% if sale.buyer.present? &&  sale.buyer_type == 'NonMember' %>
+          <%=f.fields_for :non_member do |non_member| %>
+            <h3>New Buyer (without membership)</h3>
+            <label>First name</label>
+            <%= non_member.text_field :first_name, value: sale.buyer.first_name, required: true %>
+            <label>Last name</label>
+            <%= non_member.text_field :last_name, value: sale.buyer.last_name, required: true %>
+            <label>Phone number</label>
+            <%= non_member.text_field :phone_number, value: sale.buyer.phone_number,  data: { mask: '+7 (000) 000-00-00' }, required: true %>
+          <% end %>
+        <% else %>
+          <%=f.fields_for :non_member do |non_member| %>
+            <h3>New Buyer (without membership)</h3>
+            <label>First name</label>
+            <%= non_member.text_field :first_name, required: true %>
+            <label>Last name</label>
+            <%= non_member.text_field :last_name, required: true %>
+            <label>Phone number</label>
+            <%= non_member.text_field :phone_number,  data: { mask: '+7 (000) 000-00-00' }, required: true %>
+          <% end %>
+        <% end %>
+
+      <% end %>
+    </div>
+    <div class="four wide column">
+      <div class="field">
+        <h3>Sale Date</h3>
+            <%= f.date_field :sale_date, placeholder: "Date of sale", :order => [:day, :month, :year], required: true %>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="sixteen wide column">
+      <div class="field ">
+        <% if sale.sales_products.present? %>
+          <div class="item">
+            <h3>Products</h3>
+            <table class="ui celled table">
+              <thead>
+              <tr style="text-align: center">
+                <th>Product</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+                <th>Actions</th>
+              </tr>
+              </thead>
+              <tbody class="products">
+              <tr>
+                <% sale.sales_products.each_with_index do |sale, i| %>
+                  <td>
+                    <select class="select1" name="sale[items][<%= i %>][product_id]" style="border: none;">
+                      <option value="<%=sale.product.id %>"> <%= sale.product.name %></option>
+                      <% Product.all.each do |product| %>
+                        <option value="<%=product.id %>" data-price="<%=product.sales_price %>"><%=product.name%></option>
+                      <% end %>
+                    </select>
+                  </td>
+                  <td style="text-align: center">
+                    <input type="number" name="sale[items][<%= i %>][price]" value="<%= sale.product.sales_price%>" class="payunit" disabled style="border:none"/>
+                  </td>
+                  <td>
+                    <input type="text" name="sale[items][0][quantity]" placeholder="quantity of product"
+                           required="required" class="quantity" value="<%= sale.quantity %>"
+                           style="border: none"/>
+                  </td>
+                  <td style="text-align: center">
+                    <input type="number" name="sale[items][0][total]" value="<%= sale.amount %>" class="total-of-product" disabled style="border:none"/>
+                  </td>
+                  <td style="text-align: center">✕</td>
+                <% end %>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        <% else %>
+          <div class="item">
+            <h3>Products</h3>
+            <table class="ui celled table">
+              <thead>
+              <tr style="text-align: center">
+                <th>Product</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+                <th>Actions</th>
+              </tr>
+              </thead>
+              <tbody class="products">
+              <tr>
+                <td>
+                  <select class="select1" name="sale[items][0][product_id]" style="border: none;">
+                    <option value="">Select product</option>
+                    <% Product.all.each do |product| %>
+                      <option value="<%=product.id %>" data-price="<%=product.sales_price %>"><%=product.name%></option>
+                    <% end %>
+                  </select>
+                </td>
+                <td style="text-align: center">
+                  <input type="number" name="sale[items][0][price]" value="" class="payunit" disabled style="border:none"/>
+                </td>
+                <td>
+                  <input type="text" name="sale[items][0][quantity]" placeholder="quantity of product"
+                         required="required" class="quantity"
+                         style="border: none"/>
+                </td>
+                <td style="text-align: center">
+                  <input type="number" name="sale[items][0][total]" value="" class="total-of-product" disabled style="border:none"/>
+                </td>
+                <td style="text-align: center">✕</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        <% end %>
+
+        <h4 style="float: right; display: flex; align-items: center">
+          Total:<input type="number" name="total" value=""
+                       class="total-of-products" disabled style="border:none"/>
+        </h4>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="sixteen wide column">
+      <div class="ui divider"></div>
+      <input type='button' class="ui blue button add" value='Add product'>
+      <% if sale.new_record? %>
+        <%= f.submit "Create sale", class: "ui blue button" %>
+      <% else %>
+        <%= f.submit "Update sale", class: "ui blue button" %>
+      <% end %>
+    </div>
+  </div>
+  <script>
+      $(document).ready(function(){
+          var sum = 0;
+          $(".total-of-product").each(function(){
+              sum += +$(this).val();
+          });
+          $(".total-of-products").val(sum);
+          $(".add").click(function () {
+              var item = $(
+                  '<tr>' +
+                  '<td>' +
+                  '<select class="select1" name="sale[items][1][product_id]" style="border: none;">' +
+                  '<option value="">Select product</option>' +
+                  '<% Product.all.each do |product| %>' +
+                  '<option value="<%=product.id %>" data-price="<%=product.sales_price %>"><%=product.name%></option>' +
+                  '<% end %>' +
+                  '</select>' +
+                  '</td>' +
+                  '<td style="text-align: center">' +
+                  '<input type="number" name="sale[items][1][price]" value="" class="payunit" disabled style="border:none"/>' +
+                  '</td>' +
+                  '<td>' +
+                  '<input type="text" name="sale[items][1][quantity]" placeholder="quantity of product"required="required" class="quantity" style="border: none"/>' +
+                  '</td>' +
+                  '<td style="text-align: center">' +
+                  '<input type="number" name="sale[items][1][total]" value="" class="total-of-product" disabled style="border:none"/>' +
+                  '</td>' +
+                  '</td>' +
+                  '<td style="text-align: center">' +
+                  '<a class="remove">✕</a>' +
+                  '</td>' +
+                  '</tr>');
+
+              item.appendTo(".products");
+              updateNamesOfInputs();
+              $(".remove", item).click(function() {
+                  item.remove();
+                  updateNamesOfInputs();
+                  sum = 0;
+                  $(".total-of-product").each(function(){
+                      sum += +$(this).val();
+                  });
+                  $(".total-of-products").val(sum);
+              });
+              $('.select1').on("change", function () {
+                  var price = 0;
+                  var pricenumber = 0;
+                  $(`.select1`).find("option:selected").each(function(index) {
+                      if($(this).data("price")){
+                          price = $(this).data("price");
+                          $(`input[name="sale[items][${index}][price]"]`).val(price);
+                      }
+                  });
+
+              });
+              $('.quantity').on('change', function(){
+                  $('.quantity').each(function(index){
+                      var unitprice = $(`input[name="sale[items][${index}][price]"]`).val();
+                      var unitnumber = $(`input[name="sale[items][${index}][quantity]"]`).val();
+                      pricenumber = unitprice * unitnumber;
+                      $(`input[name="sale[items][${index}][total]"]`).val(pricenumber);
+
+                  });
+                  var sum = 0;
+                  $(".total-of-product").each(function(){
+                      sum += +$(this).val();
+                  });
+                  $(".total-of-products").val(sum);
+              });
+          });
+
+          function updateNamesOfInputs() {
+              $('.products tr').each(function(index) {
+                  $(".select1", this).attr('name', `sale[items][${index}][product_id]`);
+                  $(".quantity", this).attr('name',`sale[items][${index}][quantity]`);
+                  $(".payunit", this).attr('name',`sale[items][${index}][price]`);
+                  $(".total-of-product", this).attr('name',`sale[items][${index}][total]`);
+              });
+          }
+
+          $('.select1').on("change", function () {
+              var price = 0;
+              var pricenumber = 0;
+              $(`.select1`).find("option:selected").each(function(index) {
+                  if($(this).data("price")){
+                      price = $(this).data("price");
+                      $(`input[name="sale[items][${index}][price]"]`).val(price);
+                  }
+              });
+              var sum = 0;
+              $(".total-of-product").each(function(){
+                  sum += +$(this).val();
+              });
+              $(".total-of-products").val(sum);
+          });
+
+          $('.quantity').on('change', function(){
+              $('.quantity').each(function(index){
+                  var unitprice = $(`input[name="sale[items][${index}][price]"]`).val();
+                  var unitnumber = $(`input[name="sale[items][${index}][quantity]"]`).val();
+                  pricenumber = unitprice * unitnumber;
+                  $(`input[name="sale[items][${index}][total]"]`).val(pricenumber);
+              });
+              var sum = 0;
+              $(".total-of-product").each(function(){
+                  sum += +$(this).val();
+              });
+              $(".total-of-products").val(sum);
+          });
+      });
+
+  </script>
+<% end %>
