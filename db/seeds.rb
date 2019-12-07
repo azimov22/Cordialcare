@@ -18,19 +18,19 @@ Location.find_or_create_by(country: "Kazakhstan", city: "Nur-Sultan",code_countr
 t1 = Team.find_or_create_by(location: kz)
 
 ## Members
-Member.create!(username: 'abelyankov',
+Member.create!(username: 'aazimov',
                       password: 'cordial123',
                       password_confirmation: 'cordial123',
-                      first_name: 'Arthur',
-                      last_name: 'Belyankov',
-                      birthday: "12/03/1998",
-                      email: 'abelyankov@cd.kz',
-                      phone_number: 77083515737,
-                      address: 'Zheltoksan, 137',
+                      first_name: 'Atabek',
+                      last_name: 'Azimov',
+                      birthday: "18/04/1999",
+                      email: 'aazimov@cd.kz',
+                      phone_number: 7752321771,
+                      address: 'Zheltoksan, 111',
                       marital_status: 'Free',
                       role: MemberRole.find_by(name: "Beauty Consultant Leader"),
                       gender: 'Male', team: t1
-               ) if Member.find_by(username: 'abelyankov').nil?
+               ) if Member.find_by(username: 'aazimov').nil?
 
 ## Product Categories
 
